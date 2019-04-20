@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import {html, render} from '@modulor-js/html';
 
 import audioCapturer from './components/audioCapturer';
+import audioVisualiser from './components/audioVisualiser';
 
 
 (async () => {
@@ -11,6 +12,8 @@ import audioCapturer from './components/audioCapturer';
   }
 
   const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+
+
   var mediaRecorder = new MediaRecorder(stream);
 
   const start = () => {
@@ -31,6 +34,9 @@ import audioCapturer from './components/audioCapturer';
       <button onclick=${stop}>stop</button>
       <div>
         <${audioCapturer} mediaRecorder=${mediaRecorder} />
+      </div>
+      <div>
+        <${audioVisualiser} stream=${stream} />
       </div>
     `,
     document.querySelector('#app'),

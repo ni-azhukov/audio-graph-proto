@@ -5,7 +5,7 @@ export default ({mediaRecorder}) => {
     var chunks = [];
 
     mediaRecorder.addEventListener('dataavailable', e => {
-      console.log(e.data);
+      console.log(5656, e.data);
       chunks.push(e.data);
     });
 
