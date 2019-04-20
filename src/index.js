@@ -15,13 +15,24 @@ import audioVisualiser from './components/audioVisualiser';
 
   const devices = await navigator.mediaDevices.enumerateDevices();
 
+  var aCtx = new AudioContext();
+  let inputStream;
   const draw = async (deviceId = 'default') => {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: {deviceId: {exact: deviceId}},
     });
+
+    if(inputStream){
+      inputStream.disconnect(aCtx.destination);
+    }
+
+    inputStream = aCtx.createMediaStreamSource(stream);
+    //inputStream.connect(aCtx.destination);
+
     window.stream = stream;
     render(
       html`
+        <audio />
         <div class="flex">
           <div class="split" id="one">
             <select
@@ -29,14 +40,16 @@ import audioVisualiser from './components/audioVisualiser';
                 draw(value);
               }}
             >
-              ${devices.filter(({kind}) => kind === 'audioinput').map(
-                device =>
-                  html`
-                    <option value=${device.deviceId}>
-                      ${device.kind}: ${device.label} id = ${device.deviceId}
-                    </option>
-                  `,
-              )}
+              ${devices
+                .filter(({kind}) => kind === 'audioinput')
+                .map(
+                  device =>
+                    html`
+                      <option value=${device.deviceId}>
+                        ${device.kind}: ${device.label} id = ${device.deviceId}
+                      </option>
+                    `,
+                )}
             </select>
           </div>
           <div class="split" id="two">
