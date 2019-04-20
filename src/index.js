@@ -13,53 +13,55 @@ import audioVisualiser from './components/audioVisualiser';
     return;
   }
 
-  const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+  const devices = await navigator.mediaDevices.enumerateDevices();
 
-  render(
-    html`
-      <div class="flex">
-        <div class="split" id="one">
-          ${navigator.mediaDevices && navigator.mediaDevices.enumerateDevices
-            ? navigator.mediaDevices
-                .enumerateDevices()
-                .then(devices => {
-                  return devices.map(
-                    device =>
-                      html`
-                        <div>
-                          ${device.kind}: ${device.label} id =
-                          ${device.deviceId}
-                        </div>
-                      `,
-                  );
-                })
-                .catch(function(err) {
-                  return html`
-                    ${err.name + ': ' + err.message}
-                  `;
-                })
-            : `enumerateDevices() not supported.`}
+  const draw = async (deviceId = 'default') => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {deviceId: {exact: deviceId}},
+    });
+    window.stream = stream;
+    render(
+      html`
+        <div class="flex">
+          <div class="split" id="one">
+            <select
+              onchange=${({target: {value}}) => {
+                draw(value);
+              }}
+            >
+              ${devices.filter(({kind}) => kind === 'audioinput').map(
+                device =>
+                  html`
+                    <option value=${device.deviceId}>
+                      ${device.kind}: ${device.label} id = ${device.deviceId}
+                    </option>
+                  `,
+              )}
+            </select>
+          </div>
+          <div class="split" id="two">
+            <${audioVisualiser} stream=${stream} width="300" height="200" />
+          </div>
+          <div class="split" id="three">
+            <${audioCapturer} stream=${stream} />
+          </div>
         </div>
-        <div class="split" id="two">
-          <${audioVisualiser} stream=${stream} width="300" height="200" />
-        </div>
-        <div class="split" id="three">
-          <${audioCapturer} stream=${stream} />
-        </div>
-      </div>
-    `,
-    document.querySelector('#app'),
-  );
-  const split = Split(
-    [
-      document.querySelector('#one'),
-      document.querySelector('#two'),
-      document.querySelector('#three'),
-    ],
-    {
-      sizes: [50, 25, 50],
-    },
-  );
-  window.split = split;
+      `,
+      document.querySelector('#app'),
+    );
+    const split = Split(
+      [
+        document.querySelector('#one'),
+        document.querySelector('#two'),
+        document.querySelector('#three'),
+      ],
+      {
+        sizes: [50, 25, 50],
+      },
+    );
+    window.split = split;
+  };
+
+  draw(devices[0].deviceId);
   //debugger;
 })();
