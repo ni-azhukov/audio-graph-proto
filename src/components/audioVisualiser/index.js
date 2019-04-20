@@ -14,10 +14,13 @@ export default ({stream}) => {
 
     //analyser.connect(distortion);
     //distortion.connect(audioCtx.destination);
-    const canvas = document.querySelector('#canvas');
-    const canvasCtx = canvas.getContext('2d');
-    function draw() {
-      requestAnimationFrame(draw);
+
+    function draw(canvas) {
+      requestAnimationFrame(() => {
+        draw(canvas);
+      });
+
+      const canvasCtx = canvas.getContext('2d');
 
       analyser.getByteTimeDomainData(dataArray);
 
@@ -49,6 +52,8 @@ export default ({stream}) => {
       canvasCtx.stroke();
     }
 
-    draw();
+    render(html`
+      <canvas ${draw}></canvas>
+    `, range);
   };
 };

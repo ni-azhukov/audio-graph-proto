@@ -33,10 +33,10 @@ import audioVisualiser from './components/audioVisualiser';
       <button onclick=${start}>start</button>
       <button onclick=${stop}>stop</button>
       <div>
-        <${audioCapturer} mediaRecorder=${mediaRecorder} />
+        <${audioVisualiser} stream=${stream} />
       </div>
       <div>
-        <${audioVisualiser} stream=${stream} />
+        <${audioCapturer} mediaRecorder=${mediaRecorder} />
       </div>
     `,
     document.querySelector('#app'),
