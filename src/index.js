@@ -1,5 +1,8 @@
 import 'babel-polyfill';
 import {html, render} from '@modulor-js/html';
+import Split from 'split.js';
+
+import './index.css';
 
 import audioCapturer from './components/audioCapturer';
 import audioVisualiser from './components/audioVisualiser';
@@ -14,34 +17,49 @@ import audioVisualiser from './components/audioVisualiser';
 
   render(
     html`
-      <div>
-        <${audioVisualiser} stream=${stream} width="400" height="200"/>
-      </div>
-      <div>
-        <${audioCapturer} stream=${stream} />
-      </div>
-      <div>
-        ${(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices)
-          ? navigator.mediaDevices.enumerateDevices()
-            .then(devices => {
-              return devices.map(
-                device =>
-                  html`
-                    <div>
-                      ${device.kind}: ${device.label} id = ${device.deviceId}
-                    </div>
-                  `,
-              );
-            })
-            .catch(function(err) {
-              return html`
-                ${err.name + ': ' + err.message}
-              `
-            })
-          : `enumerateDevices() not supported.`
-        }
+      <div class="flex">
+        <div class="split" id="one">
+          ${navigator.mediaDevices && navigator.mediaDevices.enumerateDevices
+            ? navigator.mediaDevices
+                .enumerateDevices()
+                .then(devices => {
+                  return devices.map(
+                    device =>
+                      html`
+                        <div>
+                          ${device.kind}: ${device.label} id =
+                          ${device.deviceId}
+                        </div>
+                      `,
+                  );
+                })
+                .catch(function(err) {
+                  return html`
+                    ${err.name + ': ' + err.message}
+                  `;
+                })
+            : `enumerateDevices() not supported.`}
+        </div>
+        <div class="split" id="two">
+          <${audioVisualiser} stream=${stream} width="300" height="200" />
+        </div>
+        <div class="split" id="three">
+          <${audioCapturer} stream=${stream} />
+        </div>
       </div>
     `,
     document.querySelector('#app'),
   );
+  const split = Split(
+    [
+      document.querySelector('#one'),
+      document.querySelector('#two'),
+      document.querySelector('#three'),
+    ],
+    {
+      sizes: [50, 25, 50],
+    },
+  );
+  window.split = split;
+  //debugger;
 })();
