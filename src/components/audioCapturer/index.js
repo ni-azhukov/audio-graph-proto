@@ -1,43 +1,69 @@
 import {html, render} from '@modulor-js/html';
 
-export default ({mediaRecorder}) => {
+export default ({stream}) => {
+  const mediaRecorder = new MediaRecorder(stream);
   return range => {
-    var chunks = [];
 
-    mediaRecorder.addEventListener('dataavailable', e => {
-      console.log(5656, e.data);
-      chunks.push(e.data);
-    });
+    const start = () => {
+      mediaRecorder.start();
+      console.log(mediaRecorder.state);
+      console.log('recorder started');
+    };
 
-    mediaRecorder.addEventListener('stop', e => {
+    const stop = () => {
+      mediaRecorder.stop();
+      console.log(mediaRecorder.state);
       console.log('recorder stopped');
+    };
 
-      var clipName = prompt('Enter a name for your sound clip');
+    const $status = document.createElement('span');
 
-      var clipContainer = document.createElement('article');
-      var clipLabel = document.createElement('p');
-      var audio = document.createElement('audio');
-      var deleteButton = document.createElement('button');
+    render(
+      html`
+        <button onclick=${start}>start</button>
+        <button onclick=${stop}>stop</button>
+        ${$status}
+        ${range => {
+          var chunks = [];
+          mediaRecorder.addEventListener('start', e => {
+            chunks = [];
+            $status.textContent = 'recording';
+          });
+          mediaRecorder.addEventListener('dataavailable', e => {
+            chunks.push(e.data);
+          });
+          mediaRecorder.addEventListener('stop', e => {
+            $status.textContent = '';
+            var blob = new Blob(chunks, {type: 'audio/ogg; codecs=opus'});
+            var audioURL = window.URL.createObjectURL(blob);
 
-      clipContainer.classList.add('clip');
-      audio.setAttribute('controls', '');
-      deleteButton.innerHTML = 'Delete';
-      clipLabel.innerHTML = clipName;
+            render(
+              html`
+                <article class="clip">
+                  <audio controls="" src="${audioURL}"></audio>
+                  <p>asd</p>
+                  <button
+                    onclick=${e => {
+                      debugger;
+                      var evtTgt = e.target;
+                      evtTgt.parentNode.parentNode.removeChild(
+                        evtTgt.parentNode,
+                      );
+                    }}
+                  >
+                    Delete
+                  </button>
+                </article>
+              `,
+              range,
+            );
 
-      clipContainer.appendChild(audio);
-      clipContainer.appendChild(clipLabel);
-      clipContainer.appendChild(deleteButton);
-
-      var blob = new Blob(chunks, {type: 'audio/ogg; codecs=opus'});
-      chunks = [];
-      var audioURL = window.URL.createObjectURL(blob);
-      audio.src = audioURL;
-
-      render(clipContainer, range);
-      deleteButton.onclick = function(e) {
-        var evtTgt = e.target;
-        evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
-      };
-    });
+            console.log('recorder stopped');
+            return;
+          });
+        }}
+      `,
+      range,
+    );
   };
 };
