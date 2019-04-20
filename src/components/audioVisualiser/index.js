@@ -1,6 +1,6 @@
 import {html, render} from '@modulor-js/html';
 
-export default ({stream}) => {
+export default ({stream, width, height}) => {
   return range => {
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     var analyser = audioCtx.createAnalyser();
@@ -53,7 +53,7 @@ export default ({stream}) => {
     }
 
     render(html`
-      <canvas ${draw}></canvas>
+      <canvas width=${width} height=${height} ${draw}></canvas>
     `, range);
   };
 };

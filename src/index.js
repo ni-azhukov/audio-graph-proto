@@ -15,7 +15,7 @@ import audioVisualiser from './components/audioVisualiser';
   render(
     html`
       <div>
-        <${audioVisualiser} stream=${stream} />
+        <${audioVisualiser} stream=${stream} width="400" height="200"/>
       </div>
       <div>
         <${audioCapturer} stream=${stream} />

@@ -1,4 +1,5 @@
 import {html, render} from '@modulor-js/html';
+import audioVisualiser from '../../components/audioVisualiser';
 
 export default ({stream}) => {
   const mediaRecorder = new MediaRecorder(stream);
@@ -28,6 +29,10 @@ export default ({stream}) => {
           mediaRecorder.addEventListener('start', e => {
             chunks = [];
             $status.textContent = 'recording';
+            render(html`
+              recording!
+              <${audioVisualiser} stream=${stream} width="10" height="10" />
+            `, range);
           });
           mediaRecorder.addEventListener('dataavailable', e => {
             chunks.push(e.data);
