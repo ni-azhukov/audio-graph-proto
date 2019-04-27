@@ -1,19 +1,41 @@
+/*
+ * Component scheme
+ *
+┌────────────────┐
+│                │
+▶────stream──────▶
+│       │        │
+└───────┼────────┘
+  ┌─────┴──────┐
+  │AnalyserNode│
+  └─────┬──────┘
+        │
+    ┌───┴────┐
+    │Waveform│
+    └────────┘
+*/
+
+
 import {html, render} from '@modulor-js/html';
+import BaseComponent from '../baseComponent';
 
-export default ({stream, width, height}) => {
-  return range => {
-    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    var analyser = audioCtx.createAnalyser();
+customElements.define('input-visualiser-component', class InputViasualiserComponent extends BaseComponent {
 
-    const source = audioCtx.createMediaStreamSource(stream);
-    source.connect(analyser);
+  inputsCount = 1;
+  outputsCount = 1;
+
+  connectIO = [[0, 0]];
+
+  async setup(){
+    this.analyser = this.audioContext.createAnalyser();
+    this.streams[0].connect(this.analyser);
+  }
+
+  render(){
+    const analyser = this.analyser;
     analyser.fftSize = 2048;
     var bufferLength = analyser.frequencyBinCount;
     var dataArray = new Uint8Array(bufferLength);
-    analyser.getByteTimeDomainData(dataArray);
-
-    //analyser.connect(distortion);
-    //distortion.connect(audioCtx.destination);
 
     function draw(canvas) {
       requestAnimationFrame(() => {
@@ -52,8 +74,13 @@ export default ({stream, width, height}) => {
       canvasCtx.stroke();
     }
 
-    render(html`
-      <canvas width=${width} height=${height} ${draw}></canvas>
-    `, range);
-  };
-};
+    return html`
+      <canvas style=${`
+        width: 5em;
+        height: 5em;
+      `} ${draw}>
+      </canvas>
+    `;
+  }
+});
+

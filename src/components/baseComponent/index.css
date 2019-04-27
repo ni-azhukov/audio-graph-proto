@@ -1,0 +1,26 @@
+.component-wrapper {
+  position: relative;
+}
+
+.component-inputs, .component-outputs {
+  position: absolute;
+  height: 100%;
+  top: 0;
+}
+
+.component-inputs {
+  left: calc(0% - 1rem);
+}
+
+.component-outputs {
+  right: calc(0% - 1rem);
+}
+
+.component-input, .component-output {
+  display: block;
+  background: red;
+  margin-bottom: 0.2rem;
+}
+
+.component-container {
+}

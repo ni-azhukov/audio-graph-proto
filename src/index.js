@@ -1,80 +1,72 @@
-import 'babel-polyfill';
 import {html, render} from '@modulor-js/html';
 import Split from 'split.js';
 
 import './index.css';
 
-import audioCapturer from './components/audioCapturer';
-import audioVisualiser from './components/audioVisualiser';
+import './components/microphoneInput';
+import './components/audioVisualiser';
+import './components/passThrough';
+import './components/speaker-output';
+import './components/volumeControl';
+import './components/audioCapturer';
+import './components/wire';
 
-(async () => {
-  if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-    console.log('getUserMedia not supported on your browser!');
-    return;
-  }
 
-  const devices = await navigator.mediaDevices.enumerateDevices();
+const data = {
+  components: [
+    {
+      component: 'microphone-input-component',
+    },
+    {
+      component: 'pass-through',
+    },
+    {
+      component: 'input-visualiser-component',
+    },
+    {
+      component: 'volume-control',
+    },
+    {
+      component: 'audio-capturer',
+    },
+    {
+      component: 'speaker-output',
+    },
+  ],
+  connections: [
+    [[0, 0], [1, 0]],
+    [[1, 0], [2, 0]],
+    [[2, 0], [3, 0]],
+    [[3, 0], [4, 0]],
+    [[4, 0], [5, 0]],
+  ]
+}
 
-  var aCtx = new AudioContext();
-  let inputStream;
-  const draw = async (deviceId = 'default') => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: {deviceId: {exact: deviceId}},
-    });
+const componentsRegistry = new Map();
+function registerComponent($component, index){
+  componentsRegistry.set(index, $component);
+}
+window.componentsRegistry = componentsRegistry;
 
-    if(inputStream){
-      inputStream.disconnect(aCtx.destination);
-    }
+function connect([source, sourcePort], [target, targetPort]){
+  const stream = target.audioContext.createMediaStreamSource(source.outputs[sourcePort].stream);
+  stream.connect(target.inputs[targetPort]);
+  return stream;
+};
 
-    inputStream = aCtx.createMediaStreamSource(stream);
-    //inputStream.connect(aCtx.destination);
+render(html`
+  ${data.components.map(({ component }, index) => html`
+    <${component} ${registerComponent}=${index} class="audio-component" />
+  `)}
+  ${data.connections.map(([[sourceIndex, sourcePort], [targetIndex, targetPort]]) => new Promise(resolve => {
+    setTimeout(() => {
+      const source = componentsRegistry.get(sourceIndex);
+      const target = componentsRegistry.get(targetIndex);
 
-    window.stream = stream;
-    render(
-      html`
-        <audio />
-        <div class="flex">
-          <div class="split" id="one">
-            <select
-              onchange=${({target: {value}}) => {
-                draw(value);
-              }}
-            >
-              ${devices
-                .filter(({kind}) => kind === 'audioinput')
-                .map(
-                  device =>
-                    html`
-                      <option value=${device.deviceId}>
-                        ${device.kind}: ${device.label} id = ${device.deviceId}
-                      </option>
-                    `,
-                )}
-            </select>
-          </div>
-          <div class="split" id="two">
-            <${audioVisualiser} stream=${stream} width="300" height="200" />
-          </div>
-          <div class="split" id="three">
-            <${audioCapturer} stream=${stream} />
-          </div>
-        </div>
-      `,
-      document.querySelector('#app'),
-    );
-    const split = Split(
-      [
-        document.querySelector('#one'),
-        document.querySelector('#two'),
-        document.querySelector('#three'),
-      ],
-      {
-        sizes: [50, 25, 50],
-      },
-    );
-    window.split = split;
-  };
+      resolve(html`
+        <wire-component source=${[source, sourcePort]} target=${[target, targetPort]}/>
+      `)
+    }, 1)
+  }))}
+`, document.querySelector('#app'))
 
-  draw(devices[0].deviceId);
-  //debugger;
-})();

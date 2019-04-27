@@ -10,3 +10,18 @@
 .gutter.gutter-horizontal {
     cursor: ew-resize;
 }
+
+
+
+
+
+
+.audio-component {
+  display: inline-block;
+  border: 1px solid;
+  min-height: 5em;
+  min-width: 5em;
+  vertical-align: top;
+  margin-right: 3em;
+  text-align: center;
+}
