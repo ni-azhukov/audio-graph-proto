@@ -13,10 +13,7 @@ function findAbsolutePosition(htmlElement) {
      x += el.offsetLeft;
      y += el.offsetTop;
   }
-  return {
-    "x": x,
-    "y": y
-  };
+  return { x, y };
 };
 
 function getPolyline(x1, y1, x2, y2, tension) {
@@ -72,17 +69,30 @@ customElements.define('wire-component', class WireComponent extends HTMLElement 
     const leftPos = findAbsolutePosition(left);
     let x1 = leftPos.x;
     let y1 = leftPos.y;
-    x1 += left.offsetWidth;
+    x1 += (left.offsetWidth / 2);
     y1 += (left.offsetHeight / 2);
 
     const rightPos = findAbsolutePosition(right);
     let x2 = rightPos.x;
     let y2 = rightPos.y;
+    x2 += (right.offsetWidth / 2);
     y2 += (right.offsetHeight / 2);
 
+    const width = Math.abs(x2 - x1) || 1;
+    const height = Math.abs(y2 - y1) || 1;
+
+    const [xx1, xx2] = x1 < x2 ? [0, width] : [width, 0];
+    const [yy1, yy2] = y1 <= y2 ? [0, height] : [height, 0];
+
     return html`
-      <svg style="position: absolute;left: 0;top: 0; height: 100%; width: 100%;">
-        <path d=${getPolyline(x1, y1, x2, y2, this.tension)} stroke="${this.color}" fill="none" />
+      <svg style=${`
+        position: absolute;
+        left: ${Math.min(x1, x2)}px;
+        top: ${Math.min(y1, y2)}px;
+        height: ${height}px;
+        width: ${width}px;
+      `}>
+        <path d=${getPolyline(xx1, yy1, xx2, yy2, this.tension)} stroke="${this.color}" fill="none" />
       </svg>
     `;
   }
