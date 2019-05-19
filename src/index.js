@@ -17,26 +17,32 @@ const data = {
     {
       component: 'microphone-input-component',
       position: [10, 60],
+      title: 'input',
     },
     {
       component: 'pass-through',
       position: [400, 100],
+      title: 'pass through',
     },
     {
       component: 'input-visualiser-component',
       position: [600, 70],
+      title: 'visualiser',
     },
     {
       component: 'volume-control',
       position: [800, 70],
+      title: 'volume',
     },
     {
       component: 'audio-capturer',
       position: [1000, 70],
+      title: 'recorder',
     },
     {
       component: 'speaker-output',
       position: [1200, 70],
+      title: 'speaker',
     },
   ],
   connections: [
@@ -61,12 +67,12 @@ function connect([source, sourcePort], [target, targetPort]){
 };
 
 render(html`
-  ${data.components.map(({ component, position }, index) => html`
+  ${data.components.map(({ component, position, title }, index) => html`
     <${component} ${registerComponent}=${index} class="audio-component" style=${{
       position: 'absolute',
       left: `${position[0]}px`,
       top: `${position[1]}px`,
-    }} />
+    }} title=${title}/>
   `)}
   ${data.connections.map(([[sourceIndex, sourcePort], [targetIndex, targetPort]]) => new Promise(resolve => {
     setTimeout(() => {

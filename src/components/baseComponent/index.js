@@ -16,6 +16,8 @@ import './index.css';
 
 export default class BaseComponent extends HTMLElement {
 
+  title = this.tagName;
+
   inputsCount = 0;
   outputsCount = 0;
 
@@ -90,6 +92,11 @@ export default class BaseComponent extends HTMLElement {
           ${this.inputs.map((input) => html`
             <span class="component-input" ${this.registerInput.bind(this)}>[->]</span>
           `)}
+        </div>
+        <div class="component-title">
+          <span>
+            ${this.title}
+          </span>
         </div>
         <div class="component-container">
           ${this.$componentContainer}
