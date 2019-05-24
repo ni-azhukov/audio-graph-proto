@@ -1,5 +1,6 @@
 import {html, render} from '@modulor-js/html';
 import Split from 'split.js';
+import { Draggable } from '@shopify/draggable';
 
 import './index.css';
 
@@ -66,9 +67,28 @@ function connect([source, sourcePort], [target, targetPort]){
   return stream;
 };
 
+function draggable($el){
+  $el.draggable = true;
+  function dr(e){
+    //$el.style.left = `${e.clientX}px`;
+    console.log(`
+      ${e.clientX}, ${e.layerX}, ${e.offsetX}, ${e.pageX}, ${e.screenX}, ${e.x}
+    `);
+  }
+  function stopDr(){
+    document.removeEventListener('mousemove', dr);
+    document.removeEventListener('mouseup', stopDr);
+  }
+  $el.ondragstart = (e) => {
+    e.preventDefault();
+    document.addEventListener('mousemove', dr);
+    document.addEventListener('mouseup', stopDr);
+  }
+};
+
 render(html`
   ${data.components.map(({ component, position, title }, index) => html`
-    <${component} ${registerComponent}=${index} class="audio-component" style=${{
+    <${component} ${registerComponent}=${index} ${draggable} class="audio-component" style=${{
       position: 'absolute',
       left: `${position[0]}px`,
       top: `${position[1]}px`,
@@ -84,7 +104,8 @@ render(html`
       `)
     }, 1)
   }))}
-`, document.querySelector('#app'))
+`, document.querySelector('#app'));
+
 
 
 
