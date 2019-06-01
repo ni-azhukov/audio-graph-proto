@@ -10,8 +10,12 @@ function findAbsolutePosition(htmlElement) {
   var x = htmlElement.offsetLeft;
   var y = htmlElement.offsetTop;
   for (var x = 0, y = 0, el = htmlElement; el != null; el = el.offsetParent) {
-     x += el.offsetLeft;
-     y += el.offsetTop;
+    // TODO: think of smth better here
+    if(el.matches('devices-rack .component-container')){
+      break;
+    }
+    x += el.offsetLeft;
+    y += el.offsetTop;
   }
   return { x, y };
 };

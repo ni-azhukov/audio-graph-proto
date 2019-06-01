@@ -1,0 +1,6 @@
+devices-rack {
+}
+
+devices-rack .component-container {
+  position: relative;
+}
