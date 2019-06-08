@@ -13,18 +13,30 @@
 import {html, render} from '@modulor-js/html';
 import BaseComponent from '../baseComponent';
 
-const getAudioDevices = async () => {
+
+const types = {
+  'audio': 'audioinput',
+  'video': 'videoinput',
+}
+
+const getDevices = async (filterKind) => {
   return (await navigator.mediaDevices.enumerateDevices()).filter(
-    ({kind}) => kind === 'audioinput',
+    ({ kind }) => !filterKind || kind === filterKind,
   );
 };
 
 customElements.define(
-  'microphone-input-component',
+  'media-input-component',
   class MicrophoneInputComponent extends BaseComponent {
 
     inputsCount = 0;
     outputsCount = 1;
+
+    data = {};
+
+    async getDevices() {
+      return getDevices(types[this.data.type]);
+    }
 
     async changeDevice(deviceId) {
       this.inputStream && this.inputStream.disconnect(this.outputs[0]);
@@ -40,10 +52,10 @@ customElements.define(
     }
 
     async setup() {
-      this.devices = await getAudioDevices();
+      this.devices = await this.getDevices();
       this.changeDevice(this.devices[0].deviceId);
       navigator.mediaDevices.addEventListener('devicechange', async () => {
-        this.devices = await getAudioDevices();
+        this.devices = await this.getDevices();
         this.renderComponent();
       });
     }

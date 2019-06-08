@@ -49,12 +49,12 @@ customElements.define('devices-rack', class DevicesRackComponent extends BaseCom
 
   render({ data }){
     return html`
-      ${data.components.map(({ component, position, title }, index) => html`
+      ${data.components.map(({ component, position, title, ...data }, index) => html`
         <${component} ${this.registerComponent.bind(this)}=${index} ${draggable} class="audio-component" style=${{
           position: 'absolute',
           left: `${position[0]}px`,
           top: `${position[1]}px`,
-        }} title=${title}/>
+        }} title=${title} ${Object.keys(data).length ? 'data' : null}=${data}/>
       `)}
       ${data.connections.map(([[sourceIndex, sourcePort], [targetIndex, targetPort]]) => new Promise(resolve => {
         setTimeout(() => {
