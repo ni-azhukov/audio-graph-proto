@@ -4,7 +4,7 @@ import { Draggable } from '@shopify/draggable';
 
 import './index.css';
 
-import './components/mediaInput';
+import './components/microphoneInput';
 import './components/audioVisualiser';
 import './components/passThrough';
 import './components/speaker-output';
@@ -17,10 +17,9 @@ import './components/devices-rack';
 const data = {
   components: [
     {
-      component: 'media-input-component',
+      component: 'microphone-input-component',
       position: [10, 10],
       title: 'input',
-      type: 'audio',
     },
     {
       component: 'pass-through',
