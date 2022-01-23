@@ -1,67 +1,87 @@
-import {html, render} from '@modulor-js/html';
-import Split from 'split.js';
-import { Draggable } from '@shopify/draggable';
+import "regenerator-runtime/runtime";
 
-import './index.css';
+import { html, render } from "@modulor-js/html";
+import Split from "split.js";
+import { Draggable } from "@shopify/draggable";
 
-import './components/microphoneInput';
-import './components/audioVisualiser';
-import './components/passThrough';
-import './components/speaker-output';
-import './components/volumeControl';
-import './components/audioCapturer';
-import './components/wire';
-import './components/devices-rack';
+import "./index.css";
 
+import "./components/microphoneInput";
+import "./components/audioVisualiser";
+import "./components/passThrough";
+import "./components/speaker-output";
+import "./components/volumeControl";
+import "./components/audioCapturer";
+import "./components/sineWave";
+import "./components/wire";
+import "./components/devices-rack";
 
 const data = {
   components: [
     {
-      component: 'microphone-input-component',
+      component: "sine-wave",
       position: [10, 10],
-      title: 'input',
+      title: "sine wave",
     },
+    // {
+    // component: "microphone-input-component",
+    // position: [10, 10],
+    // title: "input",
+    // },
     {
-      component: 'pass-through',
+      component: "pass-through",
       position: [400, 50],
-      title: 'pass through',
+      title: "pass through",
     },
     {
-      component: 'input-visualiser-component',
+      component: "input-visualiser-component",
       position: [600, 20],
-      title: 'visualiser',
+      title: "visualiser",
     },
     {
-      component: 'volume-control',
+      component: "volume-control",
       position: [800, 20],
-      title: 'volume',
+      title: "volume",
     },
     {
-      component: 'audio-capturer',
+      component: "audio-capturer",
       position: [1000, 20],
-      title: 'recorder',
+      title: "recorder",
     },
     {
-      component: 'speaker-output',
+      component: "speaker-output",
       position: [1200, 30],
-      title: 'speaker',
+      title: "speaker",
     },
   ],
   connections: [
-    [[0, 0], [1, 0]],
-    [[1, 0], [2, 0]],
-    [[2, 0], [3, 0]],
-    [[3, 0], [4, 0]],
-    [[4, 0], [5, 0]],
-  ]
-}
+    // [
+    // [6, 0],
+    // [1, 0],
+    // ],
+    [
+      [0, 0],
+      [1, 0],
+    ],
+    [
+      [1, 0],
+      [2, 0],
+    ],
+    [
+      [2, 0],
+      [3, 0],
+    ],
+    [
+      [3, 0],
+      [4, 0],
+    ],
+    [
+      [4, 0],
+      [5, 0],
+    ],
+  ],
+};
 
-
-
-render(html`
-  <devices-rack data=${data} />
-`, document.querySelector('#app'));
-
-
-
-
+document.addEventListener("click", () => {
+  render(html` <devices-rack data=${data} /> `, document.querySelector("#app"));
+});
